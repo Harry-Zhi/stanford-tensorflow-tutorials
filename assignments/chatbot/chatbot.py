@@ -6,17 +6,14 @@ https://github.com/tensorflow/models/blob/master/tutorials/rnn/translate/
 
 Sequence to sequence model by Cho et al.(2014)
 
-Created by Chip Huyen as the starter code for assignment 3,
-class CS 20SI: "TensorFlow for Deep Learning Research"
-cs20si.stanford.edu
+Created by Chip Huyen (chiphuyen@cs.stanford.edu)
+CS20: "TensorFlow for Deep Learning Research"
+cs20.stanford.edu
 
 This file contains the code to run the model.
 
-See readme.md for instruction on how to run the starter code.
+See README.md for instruction on how to run the starter code.
 """
-from __future__ import division
-from __future__ import print_function
-
 import argparse
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'

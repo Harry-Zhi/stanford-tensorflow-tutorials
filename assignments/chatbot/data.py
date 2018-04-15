@@ -6,17 +6,15 @@ https://github.com/tensorflow/models/blob/master/tutorials/rnn/translate/
 
 Sequence to sequence model by Cho et al.(2014)
 
-Created by Chip Huyen as the starter code for assignment 3,
-class CS 20SI: "TensorFlow for Deep Learning Research"
-cs20si.stanford.edu
+Created by Chip Huyen (chiphuyen@cs.stanford.edu)
+CS20: "TensorFlow for Deep Learning Research"
+cs20.stanford.edu
 
 This file contains the code to do the pre-processing for the
 Cornell Movie-Dialogs Corpus.
 
 See readme.md for instruction on how to run the starter code.
 """
-from __future__ import print_function
-
 import os
 import random
 import re
@@ -28,21 +26,28 @@ import config
 def get_lines():
     id2line = {}
     file_path = os.path.join(config.DATA_PATH, config.LINE_FILE)
-    with open(file_path, 'rb') as f:
-        lines = f.readlines()
-        for line in lines:
-            parts = line.split(' +++$+++ ')
-            if len(parts) == 5:
-                if parts[4][-1] == '\n':
-                    parts[4] = parts[4][:-1]
-                id2line[parts[0]] = parts[4]
+    print(config.LINE_FILE)
+    with open(file_path, 'r', errors='ignore') as f:
+        # lines = f.readlines()
+        # for line in lines:
+        i = 0
+        try:
+            for line in f:
+                parts = line.split(' +++$+++ ')
+                if len(parts) == 5:
+                    if parts[4][-1] == '\n':
+                        parts[4] = parts[4][:-1]
+                    id2line[parts[0]] = parts[4]
+                i += 1
+        except UnicodeDecodeError:
+            print(i, line)
     return id2line
 
 def get_convos():
     """ Get conversations from the raw data """
     file_path = os.path.join(config.DATA_PATH, config.CONVO_FILE)
     convos = []
-    with open(file_path, 'rb') as f:
+    with open(file_path, 'r') as f:
         for line in f.readlines():
             parts = line.split(' +++$+++ ')
             if len(parts) == 4:
@@ -73,7 +78,7 @@ def prepare_dataset(questions, answers):
     filenames = ['train.enc', 'train.dec', 'test.enc', 'test.dec']
     files = []
     for filename in filenames:
-        files.append(open(os.path.join(config.PROCESSED_PATH, filename),'wb'))
+        files.append(open(os.path.join(config.PROCESSED_PATH, filename),'w'))
 
     for i in range(len(questions)):
         if i in test_ids:
@@ -101,14 +106,14 @@ def basic_tokenizer(line, normalize_digits=True):
     line = re.sub('\[', '', line)
     line = re.sub('\]', '', line)
     words = []
-    _WORD_SPLIT = re.compile(b"([.,!?\"'-<>:;)(])")
+    _WORD_SPLIT = re.compile("([.,!?\"'-<>:;)(])")
     _DIGIT_RE = re.compile(r"\d")
     for fragment in line.strip().lower().split():
         for token in re.split(_WORD_SPLIT, fragment):
             if not token:
                 continue
             if normalize_digits:
-                token = re.sub(_DIGIT_RE, b'#', token)
+                token = re.sub(_DIGIT_RE, '#', token)
             words.append(token)
     return words
 
@@ -117,7 +122,7 @@ def build_vocab(filename, normalize_digits=True):
     out_path = os.path.join(config.PROCESSED_PATH, 'vocab.{}'.format(filename[-3:]))
 
     vocab = {}
-    with open(in_path, 'rb') as f:
+    with open(in_path, 'r') as f:
         for line in f.readlines():
             for token in basic_tokenizer(line):
                 if not token in vocab:
@@ -125,7 +130,7 @@ def build_vocab(filename, normalize_digits=True):
                 vocab[token] += 1
 
     sorted_vocab = sorted(vocab, key=vocab.get, reverse=True)
-    with open(out_path, 'wb') as f:
+    with open(out_path, 'w') as f:
         f.write('<pad>' + '\n')
         f.write('<unk>' + '\n')
         f.write('<s>' + '\n')
@@ -133,17 +138,17 @@ def build_vocab(filename, normalize_digits=True):
         index = 4
         for word in sorted_vocab:
             if vocab[word] < config.THRESHOLD:
-                with open('config.py', 'ab') as cf:
-                    if filename[-3:] == 'enc':
-                        cf.write('ENC_VOCAB = ' + str(index) + '\n')
-                    else:
-                        cf.write('DEC_VOCAB = ' + str(index) + '\n')
                 break
             f.write(word + '\n')
             index += 1
+        with open('config.py', 'a') as cf:
+            if filename[-3:] == 'enc':
+                cf.write('ENC_VOCAB = ' + str(index) + '\n')
+            else:
+                cf.write('DEC_VOCAB = ' + str(index) + '\n')
 
 def load_vocab(vocab_path):
-    with open(vocab_path, 'rb') as f:
+    with open(vocab_path, 'r') as f:
         words = f.read().splitlines()
     return words, {words[i]: i for i in range(len(words))}
 
@@ -158,8 +163,8 @@ def token2id(data, mode):
     out_path = data + '_ids.' + mode
 
     _, vocab = load_vocab(os.path.join(config.PROCESSED_PATH, vocab_path))
-    in_file = open(os.path.join(config.PROCESSED_PATH, in_path), 'rb')
-    out_file = open(os.path.join(config.PROCESSED_PATH, out_path), 'wb')
+    in_file = open(os.path.join(config.PROCESSED_PATH, in_path), 'r')
+    out_file = open(os.path.join(config.PROCESSED_PATH, out_path), 'w')
     
     lines = in_file.read().splitlines()
     for line in lines:
@@ -190,8 +195,8 @@ def process_data():
     token2id('test', 'dec')
 
 def load_data(enc_filename, dec_filename, max_training_size=None):
-    encode_file = open(os.path.join(config.PROCESSED_PATH, enc_filename), 'rb')
-    decode_file = open(os.path.join(config.PROCESSED_PATH, dec_filename), 'rb')
+    encode_file = open(os.path.join(config.PROCESSED_PATH, enc_filename), 'r')
+    decode_file = open(os.path.join(config.PROCESSED_PATH, dec_filename), 'r')
     encode, decode = encode_file.readline(), decode_file.readline()
     data_buckets = [[] for _ in config.BUCKETS]
     i = 0

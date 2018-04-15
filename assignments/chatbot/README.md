@@ -1,4 +1,3 @@
-<<<<<<<
 A neural chatbot using sequence to sequence model with
 attentional decoder. This is a fully functional chatbot.
 
@@ -7,11 +6,13 @@ https://github.com/tensorflow/models/blob/master/tutorials/rnn/translate/
 
 Sequence to sequence model by Cho et al.(2014)
 
-Created by Chip Huyen as the starter code for assignment 3,
-class CS 20SI: "TensorFlow for Deep Learning Research"
-cs20si.stanford.edu
+Created by Chip Huyen (chiphuyen@cs.stanford.edu)
+CS20: "TensorFlow for Deep Learning Research"
+cs20.stanford.edu
 
-The detailed assignment handout and information on training time can be found at http://web.stanford.edu/class/cs20si/assignments/a3.pdf 
+The detailed assignment handout can be found at:
+https://docs.google.com/document/d/1GJfn2B6EI8JueDiBwzTAdD34d6pC99BSt6vldOmUCPQ/edit?usp=sharing
+
 
 <h2>Sample conversation</h2>
 HUMAN ++++ hi <br>
@@ -92,11 +93,14 @@ the Cornell Movie-Dialogs Corpus from
 https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html
 Unzip it
 
-Step 2: python data.py
-<br>This will do all the pre-processing for the Cornell dataset.
+Step 2: update config.py file<br>
+Change DATA_PATH to where you store your data
 
-Step 3:
-python chatbot.py --mode [train/chat] <br>
+Step 3: python3 data.py<br>
+This will do all the pre-processing for the Cornell dataset.
+
+Step 4:
+python3 chatbot.py --mode [train/chat] <br>
 If mode is train, then you train the chatbot. By default, the model will
 restore the previously trained weights (if there is any) and continue
 training up on that.
@@ -109,10 +113,7 @@ If the mode is chat, you'll go into the interaction mode with the bot.
 By default, all the conversations you have with the chatbot will be written
 into the file output_convo.txt in the processed folder. If you run this chatbot,
 I kindly ask you to send me the output_convo.txt so that I can improve
-the chatbot. My email is huyenn@stanford.edu
+the chatbot.
 
-If you find the tutorial helpful, please head over to <a href="http://web.stanford.edu/class/cs20si/anonymous_chatlog.pdf">Anonymous Chatlog Donation</a>
-to see how you can help us create the first realistic dialogue dataset.
 
 Thank you very much!
->>>>>>> origin/master
